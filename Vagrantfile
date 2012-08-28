@@ -1,9 +1,9 @@
 Vagrant::Config.run do |config|
-  config.vm.box = "lucid64"
+  config.vm.box = "precise32"
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
-  config.vm.forward_port 80, 7654
+  config.vm.forward_port 80, 8080
   config.vm.forward_port 3306, 3306
 
   config.vm.provision :puppet do |puppet|

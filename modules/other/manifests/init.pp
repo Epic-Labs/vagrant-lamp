@@ -1,5 +1,5 @@
 class other {
-  $packages = ["htop", "curl", "tmux"]
+  $packages = ["curl"]
   package { $packages:
     ensure => present,
   }
