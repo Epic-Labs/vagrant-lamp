@@ -1,0 +1,113 @@
+<VirtualHost *:80>
+    ServerName "local.couponmom.com"
+
+    DocumentRoot "/var/www/couponmom/html"
+
+    #Alias "/sitemap" "/home/cm_prod/content/sitemap"
+    #Alias "/couponmom" "/home/cm_prod/content/couponmom"
+    #Alias "/content" "/home/cm_prod/content"
+    #Alias "/robots.txt" "/var/www/couponmom/html/robots_all.txt"
+
+    #AliasMatch ^/s\/([0-9\.]+)\/(.*)$ /home/cm_prod/releases/$1/html/$2
+
+    SetEnv CM_ENVIRONMENT dev
+    #SuexecUserGroup cm_prod cm_prod
+
+    #CustomLog "/home/cm_prod/logs/access_log" "combined"
+    #ErrorLog "/home/cm_prod/logs/error_log"
+
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/x-javascript
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.[0678] no-gzip
+    BrowserMatch \bMSIE\s7 !no-gzip !gzip-only-text/html
+
+    ExpiresActive On
+    ExpiresByType image/gif "A604800"
+    ExpiresByType image/jpeg "A604800"
+    ExpiresByType image/png "A604800"
+    ExpiresByType image/bmp "A604800"
+
+    # This is here to prevent the hacker from continue to crawl a page that does not exists and rack up bandwidth
+    <Files coupons_temp.php>
+        order allow,deny
+        deny from all
+    </Files>
+
+    <Directory "/var/www/couponmom/html">
+            Options Includes FollowSymLinks
+            AllowOverride All
+
+            #################
+            ## Start the rewrite rules
+            #################
+
+            RewriteEngine On
+            RewriteBase /
+
+            # redirect for the savetoo.net hotlinking
+            RewriteCond %{HTTP_REFERER} ^http://([a-z0-9]+\.)?savetoo\.net/ [NC]
+            RewriteRule \.*$ images/do_not_use.png [L]
+
+            # Move all people over from thecouponmom.com to couponmom.com
+            RewriteCond %{HTTP_HOST} ^thecouponmom\.com$ [NC]
+            RewriteRule ^(.*)$ http://www.couponmom.com/$1 [R=301,L]
+
+            # Move all people over from www.thecouponmom.com to couponmom.com
+            RewriteCond %{HTTP_HOST} ^www.thecouponmom\.com$ [NC]
+            RewriteRule ^(.*)$ http://www.couponmom.com/$1 [R=301,L]
+
+            # Move all people over to www.couponmom.com from couponmom.com
+            RewriteCond %{HTTP_HOST} ^couponmom\.com$ [NC]
+            RewriteCond %{REQUEST_URI} !^.*(cd_admin|cm_admin|facebook).*$ [NC]
+            RewriteRule ^(.*)$ http://www.couponmom.com/$1 [R=301,L]
+
+            #Include /var/www/couponmom/conf/site_htaccess.conf
+    </Directory>
+
+    <Directory "/var/www/couponmom/html/cm_admin">
+            Options Includes FollowSymLinks
+            AllowOverride All
+
+            RewriteEngine On
+            RewriteCond %{SERVER_PORT} !^443$
+            RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [L,R]
+
+            RewriteCond %{HTTP_HOST} ^couponmom\.com$ [NC]
+            RewriteRule ^(.*)$ https://www.couponmom.com/cm_admin/$1 [R=301,L]
+    </Directory>
+
+    <Directory "/var/www/couponmom/html/cd_admin">
+            Options Includes FollowSymLinks
+            AllowOverride All
+
+            RewriteEngine On
+            RewriteCond %{SERVER_PORT} !^443$
+            RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [L,R]
+
+            RewriteCond %{HTTP_HOST} ^couponmom\.com$ [NC]
+            RewriteRule ^(.*)$ https://www.couponmom.com/cd_admin/$1 [R=301,L]
+    </Directory>
+
+    <Directory "/var/www/couponmom/html/facebook">
+            Options Includes FollowSymLinks
+            AllowOverride All
+
+            RewriteEngine On
+            RewriteCond %{SERVER_PORT} !^443$
+            RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [L,R]
+
+            RewriteCond %{HTTP_HOST} ^couponmom\.com$ [NC]
+            RewriteRule ^(.*)$ https://www.couponmom.com/facebook/$1 [R=301,L]
+    </Directory>
+
+    <Directory "/var/www/couponmom/html/blog">
+            Options Includes FollowSymLinks
+            AllowOverride All
+
+            RewriteEngine On
+            RewriteRule ^blog\/(.*)$ http://blog.couponmom.com/$1 [R=301,L]
+    </Directory>
+
+    php_admin_value error_log "/home/cm_prod/logs/php_error.log"
+    php_value include_path ".:/var/www/couponmom/lib:/home/cm_prod/releases/current"
+</VirtualHost>

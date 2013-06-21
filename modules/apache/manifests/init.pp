@@ -21,6 +21,11 @@ class apache {
     target => "/etc/apache2/mods-available/rewrite.load",
     require => Package['apache2'],
   }
+  file { "/etc/apache2/mods-enabled/expires.load":
+    ensure => link,
+    target => "/etc/apache2/mods-available/expires.load",
+    require => Package['apache2'],
+  }
 
   file { "/etc/apache2/sites-available/default":
     ensure => present,
