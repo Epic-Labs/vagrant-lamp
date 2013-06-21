@@ -1,10 +1,10 @@
-Vagrant::Config.run do |config|
+Vagrant.configure("2") do |config|
   config.vm.box = "precise32"
-
-  # Forward a port from the guest to the host, which allows for outside
-  # computers to access the VM, whereas host only networking does not.
-  config.vm.forward_port 80, 8080
-  config.vm.forward_port 3306, 3306
+  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+  
+  config.vm.network :private_network, ip: "33.33.33.10"
+  config.vm.network :forwarded_port, guest: 80, host: 8080
+  config.vm.network :forwarded_port, guest: 3306, host: 3306
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
