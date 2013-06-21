@@ -28,9 +28,9 @@ class php::pear {
   #exec { "pear config-set auto_discover 1":
   #  require => [Package['php-pear'], Exec['pear upgrade']]
   #}
-  exec { "pear install pear.phpunit.de/PHPUnit":
-    require => [Package['php-pear'], Exec['pear config-set auto_discover 1'], Exec['pear upgrade']]
-  }
+  #exec { "pear install pear.phpunit.de/PHPUnit":
+  #  require => [Package['php-pear'], Exec['pear config-set auto_discover 1'], Exec['pear upgrade']]
+  #}
   #exec { "pear install phpunit/phploc":
   #  require => [Package['php-pear'], Exec['pear config-set auto_discover 1'], Exec['pear upgrade']]
   #}
